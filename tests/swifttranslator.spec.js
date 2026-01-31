@@ -142,28 +142,24 @@ test.describe('SwiftTranslator Singlish -> Sinhala', () => {
     });
   }
 });
-
+/* Positive UI test */
 test('Pos_UI_0001 – Sinhala output updates instantly when input text is modified', async ({ page }) => {
   await page.goto('https://www.swifttranslator.com/');
 
   const inputBox = page.getByRole('textbox', { name: 'Input Your Singlish Text Here.' });
 
-  // Step 1: type sentence
   await inputBox.fill('mama adha gedhara enavaa');
 
-  // Wait until SOME Sinhala output appears (any Sinhala chars)
   const outputText1 = await page.waitForFunction(() => {
     const body = document.body?.innerText || '';
-    const match = body.match(/[\u0D80-\u0DFF]{3,}/); // Sinhala unicode block
+    const match = body.match(/[\u0D80-\u0DFF]{3,}/); 
     return match ? match[0] : null;
   }, { timeout: 10000 });
 
   const firstSinhala = await outputText1.jsonValue();
 
-  // Step 2: change sentence (negative form)
   await inputBox.fill('mama adha gedhara ennee naehae');
 
-  // Wait until Sinhala output changes (real-time update behavior)
   await expect.poll(async () => {
     const body = await page.locator('body').innerText();
     const match = body.match(/[\u0D80-\u0DFF]{3,}/);
